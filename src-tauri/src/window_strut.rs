@@ -30,8 +30,6 @@ extern "C" {
     fn gtk_layer_set_exclusive_zone(window: *mut gtk::ffi::GtkWindow, exclusive_zone: c_int);
     fn gtk_layer_set_keyboard_mode(window: *mut gtk::ffi::GtkWindow, mode: c_int);
     fn gtk_layer_set_margin(window: *mut gtk::ffi::GtkWindow, edge: c_int, margin: c_int);
-    #[allow(dead_code)]
-    fn gtk_layer_try_force_commit(window: *mut gtk::ffi::GtkWindow);
 
     fn set_native_wayland_input_regions(
         window: *mut gtk::ffi::GtkWindow,
@@ -393,7 +391,16 @@ pub fn set_keyboard_interactivity(window: WebviewWindow, enabled: bool, reason: 
                         // Modo 0: NONE (el panel no retiene foco de teclado)
                         let mode = if enabled { 2 } else { 0 };
                         gtk_layer_set_keyboard_mode(win_ptr, mode);
-                        gtk_layer_try_force_commit(win_ptr);
+                        // Safely invoke gtk_layer_try_force_commit if supported (gtk-layer-shell 0.9+)
+                        type CommitFn = unsafe extern "C" fn(*mut gtk::ffi::GtkWindow);
+                        let sym = libc::dlsym(
+                            libc::RTLD_DEFAULT,
+                            b"gtk_layer_try_force_commit\0".as_ptr() as *const libc::c_char,
+                        );
+                        if !sym.is_null() {
+                            let func: CommitFn = std::mem::transmute(sym);
+                            func(win_ptr);
+                        }
                         eprintln!("[EnigmaOS] Dynamic layer keyboard mode set to: {} (reason: {:?})", mode, reason);
                     }
                 }

@@ -3,9 +3,9 @@
 #include <wayland-client.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <dlfcn.h>
 
 // Forward declaration from gtk-layer-shell
-extern void gtk_layer_try_force_commit(GtkWindow *window);
 extern int gtk_layer_is_layer_window(GtkWindow *window);
 
 /**
@@ -68,10 +68,18 @@ int set_native_wayland_input_regions(GtkWindow *window, const int32_t *rects, in
     // Destroy the client-side region proxy (the compositor retains its copy)
     wl_region_destroy(region);
 
-    // If this is a gtk-layer-shell window, use gtk_layer_try_force_commit so GTK coordinates
-    // buffer presentation and surface state synchronously without unmapping.
-    if (gtk_layer_is_layer_window(window)) {
-        gtk_layer_try_force_commit(window);
+    // If gtk_layer_try_force_commit is supported in the loaded gtk-layer-shell version (0.9+),
+    // resolve it dynamically via dlsym to maintain universal compatibility with older distros (e.g. Ubuntu 22.04)
+    typedef void (*gtk_layer_try_force_commit_fn)(GtkWindow *);
+    static gtk_layer_try_force_commit_fn try_force_commit = NULL;
+    static int probed = 0;
+    if (!probed) {
+        try_force_commit = (gtk_layer_try_force_commit_fn)dlsym(RTLD_DEFAULT, "gtk_layer_try_force_commit");
+        probed = 1;
+    }
+
+    if (gtk_layer_is_layer_window(window) && try_force_commit) {
+        try_force_commit(window);
     } else {
         wl_surface_commit(wl_surf);
     }
