@@ -14,12 +14,17 @@ use tauri::{AppHandle, Emitter};
 
 pub const OLLAMA_API_BASE: &str = "http://localhost:11434";
 
-// Specialized Local Models
-pub const ORCHESTRATOR_MODEL: &str = "gemma4:e4b";
-pub const SYSTEM_MODEL: &str = "hermes3";
-pub const CODE_MODEL: &str = "codegemma";
-pub const REASONING_MODEL: &str = "gemma4:31b";
-pub const GENERAL_MODEL: &str = "llama3.1";
+// Specialized Local Model Defaults (Fallback constants)
+#[allow(dead_code)]
+pub const ORCHESTRATOR_MODEL: &str = "llama3.2:3b";
+#[allow(dead_code)]
+pub const SYSTEM_MODEL: &str = "hermes3:8b";
+#[allow(dead_code)]
+pub const CODE_MODEL: &str = "qwen2.5-coder:7b";
+#[allow(dead_code)]
+pub const REASONING_MODEL: &str = "deepseek-r1:8b";
+#[allow(dead_code)]
+pub const GENERAL_MODEL: &str = "llama3.2:3b";
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum IntentCategory {
@@ -1588,8 +1593,12 @@ REGLAS ESTRICTAS DE HERRAMIENTAS:
 Responde ÚNICAMENTE con un JSON válido con este formato exacto:
 {"category": "SYSTEM" | "CODE" | "REASONING" | "GENERAL"}"#;
 
+    let cfg = crate::models_config::load_model_config();
+    let orchestrator_model = crate::models_config::resolve_or_fallback_model(&cfg.orchestrator_model, &cfg.default_model).await;
+    let fallback_system_model = crate::models_config::resolve_or_fallback_model(&cfg.system_model, &cfg.default_model).await;
+
     let request_body = ChatRequest {
-        model: ORCHESTRATOR_MODEL.to_string(),
+        model: orchestrator_model.clone(),
         messages: vec![
             ChatMessage {
                 role: "system".to_string(),
@@ -1622,32 +1631,32 @@ Responde ÚNICAMENTE con un JSON válido con este formato exacto:
     {
         Ok(r) => r,
         Err(e) => {
-            eprintln!("[Router] Error de conexión con Ollama en clasificación: {}. Usando fallback a hermes3", e);
+            eprintln!("[Router] Error de conexión con Ollama en clasificación ({}): {}. Usando fallback a {}", orchestrator_model, e, fallback_system_model);
             return Ok(AgentRoute {
                 category: IntentCategory::SYSTEM,
-                target_model: SYSTEM_MODEL.to_string(),
-                description: "Fallback automático a hermes3 por fallo de conexión".to_string(),
+                target_model: fallback_system_model,
+                description: "Fallback automático por fallo de conexión".to_string(),
             });
         }
     };
 
     if !res.status().is_success() {
-        eprintln!("[Router] Ollama retornó HTTP {}. Usando fallback a hermes3", res.status());
+        eprintln!("[Router] Ollama retornó HTTP {}. Usando fallback a {}", res.status(), fallback_system_model);
         return Ok(AgentRoute {
             category: IntentCategory::SYSTEM,
-            target_model: SYSTEM_MODEL.to_string(),
-            description: "Fallback automático a hermes3 por respuesta HTTP no exitosa".to_string(),
+            target_model: fallback_system_model,
+            description: "Fallback automático por respuesta HTTP no exitosa".to_string(),
         });
     }
 
     let chat_resp: ChatResponse = match res.json().await {
         Ok(json) => json,
         Err(e) => {
-            eprintln!("[Router] Error deserializando JSON de clasificación: {}. Usando fallback a hermes3", e);
+            eprintln!("[Router] Error deserializando JSON de clasificación: {}. Usando fallback a {}", e, fallback_system_model);
             return Ok(AgentRoute {
                 category: IntentCategory::SYSTEM,
-                target_model: SYSTEM_MODEL.to_string(),
-                description: "Fallback automático a hermes3 por error de formato JSON".to_string(),
+                target_model: fallback_system_model,
+                description: "Fallback automático por error de formato JSON".to_string(),
             });
         }
     };
@@ -1664,22 +1673,22 @@ Responde ÚNICAMENTE con un JSON válido con este formato exacto:
     let route = match category {
         IntentCategory::SYSTEM => AgentRoute {
             category,
-            target_model: SYSTEM_MODEL.to_string(),
+            target_model: crate::models_config::resolve_or_fallback_model(&cfg.system_model, &cfg.default_model).await,
             description: "Ejecución de herramientas y control del sistema Linux".to_string(),
         },
         IntentCategory::CODE => AgentRoute {
             category,
-            target_model: CODE_MODEL.to_string(),
+            target_model: crate::models_config::resolve_or_fallback_model(&cfg.code_model, &cfg.default_model).await,
             description: "Generación, análisis y depuración de código y scripts".to_string(),
         },
         IntentCategory::REASONING => AgentRoute {
             category,
-            target_model: REASONING_MODEL.to_string(),
+            target_model: crate::models_config::resolve_or_fallback_model(&cfg.reasoning_model, &cfg.default_model).await,
             description: "Razonamiento profundo, análisis lógico y conceptual".to_string(),
         },
         IntentCategory::GENERAL => AgentRoute {
             category,
-            target_model: GENERAL_MODEL.to_string(),
+            target_model: crate::models_config::resolve_or_fallback_model(&cfg.general_model, &cfg.default_model).await,
             description: "Conversación general e interactividad fluida".to_string(),
         },
     };
@@ -1736,12 +1745,16 @@ pub async fn process_enigma_message_core(
 
     eprintln!("[Router] Procesando mensaje: '{}' (Persona: {:?})", input_trimmed, active_persona);
 
+    let cfg = crate::models_config::load_model_config();
+    let orchestrator_display = crate::models_config::resolve_or_fallback_model(&cfg.orchestrator_model, &cfg.default_model).await;
+    let fallback_system = crate::models_config::resolve_or_fallback_model(&cfg.system_model, &cfg.default_model).await;
+
     // Fase 1: Orquestador analizando intención...
     if let Some(app) = app {
         let _ = app.emit("enigma-status", EnigmaStatusPayload {
             phase: 1,
             status: "Orquestador analizando intención...".to_string(),
-            model: Some(ORCHESTRATOR_MODEL.to_string()),
+            model: Some(orchestrator_display),
         });
     }
 
@@ -1752,12 +1765,12 @@ pub async fn process_enigma_message_core(
     // 1.1 Inyección Combinada: Core Memory + Persona Activa (Custom GPTs)
     let identity_combined = build_combined_system_prompt(&identity_core, active_persona.as_deref());
 
-    // 2. Clasificar la intención con el orquestador gemma4:e4b
+    // 2. Clasificar la intención
     let route = classify_intent(input_trimmed)
         .await
         .unwrap_or_else(|_| AgentRoute {
             category: IntentCategory::SYSTEM,
-            target_model: SYSTEM_MODEL.to_string(),
+            target_model: fallback_system,
             description: "Fallback por error de clasificación".to_string(),
         });
 

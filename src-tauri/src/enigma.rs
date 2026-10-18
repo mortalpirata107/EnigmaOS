@@ -1737,8 +1737,11 @@ REGLAS DE ORO:
         calendar_status = calendar_status_summary
     );
 
+    let cfg = crate::models_config::load_model_config();
+    let model_to_use = crate::models_config::resolve_or_fallback_model(&cfg.reasoning_model, &cfg.default_model).await;
+
     let body = serde_json::json!({
-        "model": "deepseek-r1:14b",
+        "model": model_to_use,
         "system": system_prompt,
         "prompt": prompt,
         "stream": true,

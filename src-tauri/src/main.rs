@@ -24,6 +24,7 @@ mod personas;
 mod clipboard;
 mod desktop_notifications;
 mod connectivities;
+mod models_config;
 
 use gtk::prelude::*;
 use tauri::{Manager, Emitter, WebviewWindow};
@@ -512,6 +513,8 @@ fn main() {
             windows::capture_window_thumbnail_now,
             desktop_notifications::invoke_desktop_notification_action,
             desktop_notifications::close_desktop_notification,
+            models_config::get_model_config_cmd,
+            models_config::save_model_config_cmd,
 
         ])
         .build(tauri::generate_context!())

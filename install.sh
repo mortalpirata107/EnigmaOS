@@ -158,6 +158,23 @@ else
     fi
 fi
 
+# 3. Inicializar configuración de modelos si no existe
+if [ ! -f "$CONFIG_DIR/models.json" ]; then
+    echo -e "${YELLOW}>> Generando configuración inicial de modelos en $CONFIG_DIR/models.json...${NC}"
+    cat << "EOF" > "$CONFIG_DIR/models.json"
+{
+  "preset": "balanced",
+  "orchestrator_model": "llama3.2:3b",
+  "system_model": "hermes3:8b",
+  "code_model": "qwen2.5-coder:7b",
+  "reasoning_model": "deepseek-r1:8b",
+  "general_model": "llama3.2:3b",
+  "vision_model": "llava:7b",
+  "default_model": "llama3.2:3b"
+}
+EOF
+fi
+
 # Actualizar base de datos de escritorio e iconos
 update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
 gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
@@ -165,7 +182,13 @@ gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor" 2>/dev/null || tr
 echo -e "\n${GREEN}${BOLD}✔ ¡EnigmaOS instalado exitosamente!${NC}"
 echo -e "------------------------------------------------------------------"
 echo -e "Puedes iniciar EnigmaOS:"
-echo -e "  1. Desde tu lanzador de aplicaciones (KRunner, GNOME Dash, Rofi, etc.): buscar ${BOLD}EnigmaOS${NC}"
+echo -e "  1. Desde tu lanzador de aplicaciones (KRunner, GNOME Dash, Rofi): buscar ${BOLD}EnigmaOS${NC}"
 echo -e "  2. Desde la terminal: ${BOLD}enigmaos-launcher${NC} o ${BOLD}enigmaos${NC}"
 echo -e "  3. Atajo global por defecto para invocar a Enigma: ${BOLD}Alt + 3${NC}"
+echo -e "  4. Configuración de Modelos de IA:"
+echo -e "     - Archivo de configuración: ${BOLD}~/.config/enigmaos/models.json${NC}"
+echo -e "     - Para instalar el modelo recomendado por defecto (equilibrado):"
+echo -e "       ${CYAN}ollama pull llama3.2:3b${NC}"
+echo -e "     - Para equipos con recursos limitados (solo CPU / 4-8 GB RAM):"
+echo -e "       ${CYAN}ollama pull llama3.2:1b${NC} y cambia 'default_model' en models.json"
 echo -e "------------------------------------------------------------------"

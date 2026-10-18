@@ -296,7 +296,15 @@ pub async fn execute_vision_inference(
         .build()
         .map_err(|e| format!("Error configurando cliente HTTP: {}", e))?;
 
-    let candidate_models = ["gemma4:e4b", "llava"];
+    let cfg = crate::models_config::load_model_config();
+    let configured_vision = crate::models_config::resolve_or_fallback_model(&cfg.vision_model, "llava").await;
+    let candidate_models = [
+        configured_vision.as_str(),
+        "llava:7b",
+        "llava",
+        "llama3.2-vision",
+        "moondream",
+    ];
     let mut last_err = String::new();
 
     for model in candidate_models {
