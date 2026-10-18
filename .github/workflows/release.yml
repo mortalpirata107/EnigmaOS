@@ -58,7 +58,9 @@ jobs:
             libcairo2-dev \
             libgtk-layer-shell-dev \
             libwayland-dev \
-            wayland-protocols
+            wayland-protocols \
+            patchelf \
+            libfuse2
 
       - name: Install Vosk Speech Library (libvosk.so)
         run: |
@@ -79,7 +81,7 @@ jobs:
         run: npm run build
 
       - name: Build and Release with Tauri Action
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
