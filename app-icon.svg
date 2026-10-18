@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="128" fill="#0b0c10"/>
+  <defs>
+    <linearGradient id="grad" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="50%" stop-color="#ff007f"/>
+      <stop offset="100%" stop-color="#00f0ff"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <path d="M256 80 L430 420 C430 420 318 360 256 390 C194 360 82 420 82 420 Z" fill="url(#grad)" filter="url(#glow)"/>
+  <path d="M256 80 L360 400 C360 400 295 370 256 390 Z" fill="#ff007f" opacity="0.9"/>
+  <path d="M256 80 L152 400 C152 400 217 370 256 390 Z" fill="#00f0ff" opacity="0.9"/>
+</svg>

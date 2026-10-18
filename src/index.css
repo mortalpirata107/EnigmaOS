@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --bg-pure-black: #000000;
+  --accent-color: #b82a2a;
+  --accent-crimson: var(--accent-color);
+  --accent-highlight: #ff4d4d;
+  --accent-glow: rgba(184, 42, 42, 0.85);
+  --accent-border: rgba(184, 42, 42, 0.45);
+  --accent-dim: rgba(184, 42, 42, 0.15);
+  --text-pure-white: #ffffff;
+  --border-subtle: rgba(255, 255, 255, 0.09);
+  --border-crimson: var(--accent-border);
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Tabular stable digits for live clocks and counters */
+.font-mono-num {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================================
+   SISTEMA GLOBAL DE NEUMORFISMO PURO (NEGRO OBSIDIANA, ROJO CARMESÍ Y BLANCO)
+   ========================================================================= */
+
+/* 1. .neu-chassis (Contenedores Principales: Islas de la Topbar, Dynamic Notch, Launcher y Dock) */
+.neu-chassis {
+  background: #0B0B0E !important;
+  background-color: #0B0B0E !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.95) !important;
+  border: 1px solid rgba(239, 68, 68, 0.18) !important;
+}
+
+/* 2. .neu-extruded (Botones físicos, Tarjetas Bento, Controles Play/Pause/Next, Píldoras interactivas) */
+.neu-extruded {
+  background: #111116;
+  box-shadow: 2px 2px 5px #030305, -2px -2px 5px #181822;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.neu-extruded:hover {
+  box-shadow: 3px 3px 7px #020203, -2px -2px 6px #1C1C28;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.neu-extruded:active, .neu-extruded-active, .neu-active {
+  box-shadow: inset 2px 2px 4px #030305, inset -1px -1px 3px #181822 !important;
+}
+
+/* 3. .neu-inset (Cavidades talladas: Buscadores, Badges, Píldora del Reloj, Carril de progreso, Marco de carátula y Visualizador) */
+.neu-inset {
+  background: #08080C !important;
+  box-shadow: inset 2px 2px 4px #030305, inset -1px -1px 3px #15151E, 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(239, 68, 68, 0.12) !important;
+}
+
+/* 4. .neu-led-red (Acentos luminosos y barras activas) */
+.neu-led-red {
+  background: linear-gradient(90deg, #991B1B, #EF4444) !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Retro-compatibilidad transparente para clases previas */
+.neu-relief {
+  background: linear-gradient(145deg, #14141B, #09090D);
+  box-shadow: 5px 5px 11px #030305, -4px -4px 9px #181822, inset 1px 1px 0px rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.neu-relief:hover {
+  box-shadow: 6px 6px 13px #020203, -4px -4px 10px #1C1C28, inset 0 0 8px rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+.neu-relief:active, .neu-relief-pressed {
+  box-shadow: inset 3px 3px 6px #030305, inset -2px -2px 5px #181822 !important;
+}
+
+.neu-sunken {
+  background: #060609 !important;
+  box-shadow: inset 3px 3px 7px #020203, inset -2px -2px 6px #15151E, 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.6) !important;
+}
+
+.neu-dial {
+  background: linear-gradient(145deg, #14141B, #09090D);
+  box-shadow: 5px 5px 11px #030305, -4px -4px 9px #181822, inset 1px 1px 0px rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.neu-dial:hover {
+  box-shadow: 6px 6px 13px #020203, -4px -4px 10px #1C1C28, inset 0 0 8px rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+.neu-dial:active {
+  box-shadow: inset 3px 3px 6px #030305, inset -2px -2px 5px #181822 !important;
+}
+
+/* Acentos de brillo */
+.glow-crimson {
+  box-shadow: 0 0 18px var(--accent-glow);
+}
+
+.text-glow-crimson {
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Barras de desplazamiento estilizadas en Negro Puro y Acento Activo */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-highlight);
+}
+

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=EnigmaOS
+GenericName=AI Desktop Shell & Intelligence Layer
+Comment=EnigmaOS - TopBar, Dynamic Dock & AI Assistant
+Exec=enigmaos-launcher
+Icon=enigmaos
+Terminal=false
+Categories=System;Utility;DesktopSettings;
+Keywords=topbar;bar;dynamic;enigma;panel;theme;shell;assistant;ai;
+StartupNotify=false
+X-KDE-SubstituteUID=false
+X-KDE-StartupNotify=false

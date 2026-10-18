@@ -1,0 +1,52 @@
+# Secrets & Environment variables
+.env
+.env.*
+*.env
+src-tauri/.env
+
+# Rust build output
+/src-tauri/target/
+/src-tauri/gen/
+/src-tauri/bin/
+target/
+
+# Node / Web dependencies & build
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Logs & temp files
+*.log
+/tmp/
+
+# Databases
+*.db
+*.sqlite*
+
+# Binaries & bytecode
+*.exe
+*.dll
+*.bin
+*.pyc
+__pycache__/
+
+# WhatsApp bridge session, store & credentials
+whatsapp-bridge/.wwebjs_auth/
+whatsapp-bridge/.wwebjs_cache/
+whatsapp-bridge/node_modules/
+whatsapp-bridge/baileys_store.json
+whatsapp-bridge/latest_qr.txt
+whatsapp-bridge/*.log
+
+# Runtime locks & sockets
+*.sock
+*.lock
+
+# OS metadata
+.directory
+.DS_Store
+
+# Local backups
+src_backup_stable/
+*_backup/
+*_backup_stable/

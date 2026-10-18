@@ -1,0 +1,53 @@
+[package]
+name = "enigmaos"
+version = "1.0.0"
+description = "EnigmaOS - AI-Powered Desktop Shell & Intelligence Layer"
+authors = ["mortalpirata107"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+cc = "1.0"
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+gtk = "0.18"
+gdk = "0.18"
+gdkx11 = "0.18"
+cairo-rs = "0.18"
+sysinfo = "0.30"
+evdev = "0.12"
+tauri-plugin-global-shortcut = "2.4.0"
+reqwest = { version = "0.13.5", features = ["json", "stream", "blocking", "form", "rustls"] }
+futures-util = "0.3.34"
+cpal = "0.15"
+vosk = "0.3"
+tokio = { version = "1", features = ["full"] }
+rusqlite = { version = "0.31", features = ["bundled"] }
+notify-rust = "4.11"
+chrono = { version = "0.4", features = ["serde"] }
+tiny_http = "0.12"
+open = "5"
+url = "2"
+enigo = { version = "0.2", default-features = false, features = ["wayland", "x11rb"] }
+base64 = "0.22"
+teloxide = { version = "0.13", features = ["macros"] }
+dotenvy = "0.15"
+zbus = "5.19.0"
+arboard = { version = "3.6.1", features = ["wayland-data-control"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+libc = "0.2"
+
+
+
+[profile.dev]
+incremental = true
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "unwind"
+strip = true

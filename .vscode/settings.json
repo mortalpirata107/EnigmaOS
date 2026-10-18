@@ -1,0 +1,24 @@
+{
+  "files.watcherExclude": {
+    "**/src-tauri/target/**": true,
+    "**/target/**": true,
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/whatsapp-bridge/baileys_store.json": true,
+    "**/whatsapp-bridge/session/**": true,
+    "**/*.db-wal": true,
+    "**/*.db-shm": true
+  },
+  "search.exclude": {
+    "**/src-tauri/target": true,
+    "**/target": true,
+    "**/node_modules": true,
+    "**/whatsapp-bridge/baileys_store.json": true,
+    "**/whatsapp-bridge/session": true
+  },
+  "files.exclude": {
+    "**/src-tauri/target": true
+  },
+  "rust-analyzer.check.overrideCommand": null,
+  "rust-analyzer.cargo.buildScripts.enable": true
+}
