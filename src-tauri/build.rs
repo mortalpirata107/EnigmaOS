@@ -6,11 +6,13 @@ fn main() {
     println!("cargo:rustc-link-search=native=/usr/lib/x86_64-linux-gnu");
     println!("cargo:rustc-link-lib=gtk-layer-shell");
     println!("cargo:rustc-link-lib=wayland-client");
+    println!("cargo:rustc-link-lib=dl");
     println!("cargo:rustc-link-arg=-Wl,-rpath,{}/.local/lib", home);
     println!("cargo:rustc-link-arg=-Wl,-rpath,/usr/local/lib");
     println!("cargo:rustc-link-arg=-Wl,-rpath,/usr/lib/x86_64-linux-gnu");
 
     let mut build = cc::Build::new();
+    build.define("_GNU_SOURCE", None);
     build.file("c_src/wayland_input.c");
     build.include(format!("{}/.local/include", home));
     build.include("/usr/include");

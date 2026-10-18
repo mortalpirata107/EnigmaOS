@@ -1,9 +1,17 @@
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include <gtk/gtk.h>
 #include <gdk/gdkwayland.h>
 #include <wayland-client.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <dlfcn.h>
+
+#ifndef RTLD_DEFAULT
+#define RTLD_DEFAULT ((void *) 0)
+#endif
 
 // Forward declaration from gtk-layer-shell
 extern int gtk_layer_is_layer_window(GtkWindow *window);
@@ -78,8 +86,12 @@ int set_native_wayland_input_regions(GtkWindow *window, const int32_t *rects, in
         probed = 1;
     }
 
-    if (gtk_layer_is_layer_window(window) && try_force_commit) {
-        try_force_commit(window);
+    if (gtk_layer_is_layer_window(window)) {
+        if (try_force_commit) {
+            try_force_commit(window);
+        } else {
+            wl_surface_commit(wl_surf);
+        }
     } else {
         wl_surface_commit(wl_surf);
     }
