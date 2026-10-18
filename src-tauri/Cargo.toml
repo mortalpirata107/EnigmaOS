@@ -4,6 +4,11 @@ version = "1.0.0"
 description = "EnigmaOS - AI-Powered Desktop Shell & Intelligence Layer"
 authors = ["mortalpirata107"]
 edition = "2021"
+default-run = "enigmaos"
+
+[[bin]]
+name = "enigmaos"
+path = "src/main.rs"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
