@@ -53,29 +53,41 @@ install_system_deps() {
     case "$DISTRO" in
         arch|manjaro|endeavouros)
             sudo pacman -S --needed --noconfirm \
-                webkit2gtk-4.1 gtk3 cairo openssl alsa-lib wmctrl libappindicator-gtk3 xdotool 2>/dev/null || \
+                webkit2gtk-4.1 gtk3 cairo openssl alsa-lib wmctrl libappindicator-gtk3 xdotool gtk-layer-shell unzip 2>/dev/null || \
             sudo pacman -S --needed --noconfirm \
-                webkit2gtk gtk3 cairo openssl alsa-lib wmctrl xdotool
+                webkit2gtk gtk3 cairo openssl alsa-lib wmctrl xdotool gtk-layer-shell unzip
             ;;
         ubuntu|debian|pop|mint|elementary|zorin)
             sudo apt-get update -y
             sudo apt-get install -y \
-                libwebkit2gtk-4.1-dev libgtk-3-dev libcairo2-dev libssl-dev libasound2-dev wmctrl libayatana-appindicator3-dev xdotool 2>/dev/null || \
+                libwebkit2gtk-4.1-dev libgtk-3-dev libcairo2-dev libssl-dev libasound2-dev wmctrl libayatana-appindicator3-dev xdotool libgtk-layer-shell-dev libwayland-dev wayland-protocols unzip 2>/dev/null || \
             sudo apt-get install -y \
-                libwebkit2gtk-4.0-dev libgtk-3-dev libcairo2-dev libssl-dev libasound2-dev wmctrl xdotool
+                libwebkit2gtk-4.0-dev libgtk-3-dev libcairo2-dev libssl-dev libasound2-dev wmctrl xdotool libgtk-layer-shell-dev unzip
             ;;
         fedora|rhel|centos)
             sudo dnf install -y \
-                webkit2gtk4.1-devel gtk3-devel cairo-devel openssl-devel alsa-lib-devel wmctrl libappindicator-gtk3-devel xdotool
+                webkit2gtk4.1-devel gtk3-devel cairo-devel openssl-devel alsa-lib-devel wmctrl libappindicator-gtk3-devel xdotool gtk-layer-shell-devel wayland-devel unzip
             ;;
         opensuse*|suse)
             sudo zypper install -y \
-                webkit2gtk3-devel gtk3-devel cairo-devel libopenssl-devel alsa-devel wmctrl libappindicator3-1 xdotool
+                webkit2gtk3-devel gtk3-devel cairo-devel libopenssl-devel alsa-devel wmctrl libappindicator3-1 xdotool gtk-layer-shell-devel unzip
             ;;
         *)
             echo -e "${YELLOW}Aviso: Distribución no reconocida para auto-instalación de paquetes. Asegúrate de tener GTK3, WebKit2GTK y ALSA instalados.${NC}"
             ;;
     esac
+
+    # Comprobar e instalar libvosk.so si no está presente
+    if [ ! -f "/usr/lib/libvosk.so" ] && [ ! -f "/usr/local/lib/libvosk.so" ] && [ ! -f "$HOME/.local/lib/libvosk.so" ]; then
+        echo -e "${YELLOW}>> Descargando e instalando librería de reconocimiento de voz Vosk...${NC}"
+        mkdir -p "$HOME/.local/lib" "$HOME/.local/include"
+        VOSK_TMP=$(mktemp -d)
+        curl -sL https://github.com/alphacep/vosk-api/releases/download/v0.3.45/vosk-linux-x86_64-0.3.45.zip -o "$VOSK_TMP/vosk.zip"
+        unzip -q "$VOSK_TMP/vosk.zip" -d "$VOSK_TMP"
+        cp "$VOSK_TMP/vosk-linux-x86_64-0.3.45/libvosk.so" "$HOME/.local/lib/"
+        cp "$VOSK_TMP/vosk-linux-x86_64-0.3.45/vosk_api.h" "$HOME/.local/include/"
+        rm -rf "$VOSK_TMP"
+    fi
 }
 
 # Preguntar antes de instalar dependencias si sudo está disponible

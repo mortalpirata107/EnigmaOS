@@ -47,6 +47,7 @@ jobs:
             curl \
             wget \
             file \
+            unzip \
             libxdo-dev \
             libssl-dev \
             libayatana-appindicator3-dev \
@@ -54,7 +55,22 @@ jobs:
             libasound2-dev \
             wmctrl \
             libgtk-3-dev \
-            libcairo2-dev
+            libcairo2-dev \
+            libgtk-layer-shell-dev \
+            libwayland-dev \
+            wayland-protocols
+
+      - name: Install Vosk Speech Library (libvosk.so)
+        run: |
+          mkdir -p ~/.local/lib ~/.local/include
+          wget -q https://github.com/alphacep/vosk-api/releases/download/v0.3.45/vosk-linux-x86_64-0.3.45.zip
+          unzip -q vosk-linux-x86_64-0.3.45.zip
+          sudo cp vosk-linux-x86_64-0.3.45/libvosk.so /usr/lib/
+          sudo cp vosk-linux-x86_64-0.3.45/libvosk.so /usr/local/lib/
+          sudo cp vosk-linux-x86_64-0.3.45/vosk_api.h /usr/include/
+          cp vosk-linux-x86_64-0.3.45/libvosk.so ~/.local/lib/
+          cp vosk-linux-x86_64-0.3.45/vosk_api.h ~/.local/include/
+          sudo ldconfig
 
       - name: Install frontend dependencies
         run: npm ci || npm install
